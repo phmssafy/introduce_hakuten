@@ -25,7 +25,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght=300;400;500;700;900&family=Playfair+Display:ital,wght=0,600;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     
     <style>
         body {
@@ -283,7 +283,7 @@
                         </div>
                         <h4 class="text-lg font-black text-brandDarkRed mb-3">"서울 이에케의 확고한 기준점"</h4>
                         <p class="text-stone-700 text-sm leading-relaxed mb-6 font-medium">
-                            묵직한 돼지육수를 기반으로 한 짭짤한 국물, 그리고 위에 올라오는 향미유가 직관적으로 혀를 때리는 맛입니다. 면은 굵고 꼬들해서 국물과 기름을 한번에 끌어다주고, 시금치는 정말 좋은 휴식처가 되어줍니다. 면을 다 먹었다면, 뒤에 있는 셀프바에서 밥에 마요네즈와 마늘절임을 뿌려 가져와, 라멘의 국물을 취향에 맞게 뿌려 비벼 먹 것을 추천합니다. 아 쓰다보니 먹고싶네 내일 가겠습니다.
+                            묵직한 돼지육수를 기반으로 한 짭짤한 국물, 그리고 위에 올라오는 향미유가 직관적으로 혀를 때리는 맛입니다. 면은 굵고 꼬들해서 국물과 기름을 한번에 끌어다주고, 시금치는 정말 좋은 휴식처가 되어줍니다. 면을 다 먹었다면, 뒤에 있는 셀프바에서 밥에 마요네즈와 마늘절임을 뿌려 가져와, 라멘의 국물을 취향에 맞게 뿌려 비벼 먹을 것을 추천합니다. 아 쓰다보니 먹고싶네 내일 가겠습니다.
                         </p>
                     </div>
                     <div class="flex items-center gap-3 border-t border-stone-300 pt-4 mt-auto">
@@ -635,19 +635,19 @@
                 const isMobile = window.innerWidth < 768;
 
                 if (isMobile) {
-                    // [모바일 대응] 컨테이너 높이를 넉넉히 연장해 겹침 원천 방지
-                    landingContainer.style.height = '1150px';
+                    // [모바일 대응] 컨테이너 높이를 넉넉히 연장해 겹침 원천 방지 (기존 1150px -> 1350px)
+                    landingContainer.style.height = '1350px';
 
-                    // 라멘 사진을 상단 중앙에 고정 (px 기반으로 정밀 배치)
+                    // 라멘 사진의 위쪽 제목 겹침 및 아래쪽 보드 겹침 해결을 위해 top 위치 하향 조정 (기존 220px -> 300px)
                     ramenBtn.style.width = '200px';
                     ramenBtn.style.height = '200px';
                     ramenBtn.style.left = '50%';
-                    ramenBtn.style.top = '220px';
+                    ramenBtn.style.top = '300px';
                     ramenBtn.style.transform = 'translate(-50%, -50%) scale(1)';
 
-                    // 가게 정보 UI 보드를 라멘 사진 한참 아래 배치해 절대 겹치지 않게 조치
+                    // 가게 정보 UI 보드를 라멘 사진 한참 아래 배치해 절대 겹치지 않게 하향 배치 (기존 700px -> 820px)
                     infoBoard.style.left = '50%';
-                    infoBoard.style.top = '700px';
+                    infoBoard.style.top = '820px';
                     infoBoard.style.transform = 'translate(-50%, -50%) scale(0.95)';
                 } else {
                     // [데스크톱 대응] 기본 풀스크린 높이 복구
