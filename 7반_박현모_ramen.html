@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>하쿠텐 - 서울 최고의 이에케 라멘</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandRed: '#a81c1c',
+                        brandDarkRed: '#7c1111',
+                        boardBrown: '#eae2d5',
+                        boardGray: '#f1f3f5',
+                        boardBeige: '#fbf9f6',
+                        textDark: '#2b2b2b'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:ital,wght=0,600;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #a81c1c;
+            overflow-x: hidden;
+        }
+        
+        /* 레이아웃 전환 애니메이션 */
+        .transition-layout {
+            transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        /* 라멘 원형 이미지 요동 효과 */
+        @keyframes pulse-gentle {
+            0%, 100% { transform: scale(1) translate(-50%, -50%); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+            50% { transform: scale(1.05) translate(-48%, -52%); box-shadow: 0 0 25px 12px rgba(255, 255, 255, 0.2); }
+        }
+        
+        .pulse-hover:hover {
+            animation: pulse-gentle 2s infinite ease-in-out;
+        }
+
+        /* 활성화 이전 스크롤 비활성화 */
+        .no-scroll {
+            overflow: hidden;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body class="no-scroll text-textDark antialiased selection:bg-brandRed selection:text-white" id="main-body">
+
+    <!-- 메인 랜딩 영역 -->
+    <main id="landing-container" class="relative w-full h-screen bg-brandRed transition-colors duration-1000 flex flex-col justify-between overflow-hidden z-10">
+        
+        <!-- 헤더 영역 -->
+        <header id="header-bar" class="w-full pt-8 px-6 text-center opacity-0 -translate-y-10 transition-layout pointer-events-none z-30">
+            <p class="text-white text-sm font-semibold tracking-widest uppercase mb-1">SEOUL'S BEST IEKE RAMEN</p>
+            <h1 class="text-white text-3xl md:text-5xl font-black tracking-tight drop-shadow-md">
+                박현모 선정 서울 최고의 라멘 맛집
+            </h1>
+        </header>
+
+        <!-- 중앙 메인 원형 이미지 버튼 (기존 크기보다 2배 작아진 초기 사이즈 적용) -->
+        <div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+            <button id="ramen-btn" class="absolute pointer-events-auto w-32 h-32 md:w-[210px] md:h-[210px] rounded-full overflow-hidden border-8 border-white shadow-2xl transition-layout cursor-pointer focus:outline-none focus:ring-4 focus:ring-white/50 active:scale-95" style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
+                <div class="relative w-full h-full bg-stone-900">
+                    <!-- 실제 업로드 라멘 이미지 -->
+                    <img id="ramen-img" src="ramen.jpg" class="w-full h-full object-cover select-none scale-105 hover:scale-110 transition-transform duration-700" alt="하쿠텐 이에케 라멘" onerror="this.style.display='none'; document.getElementById('ramen-fallback').style.display='flex';">
+                    
+                    <!-- 이미지 로딩 전/실패 시의 고품질 인라인 SVG 플레이스홀더 -->
+                    <div id="ramen-fallback" class="absolute inset-0 bg-stone-900 flex-col items-center justify-center text-center p-4 hidden">
+                        <svg class="w-12 h-12 text-amber-500 mb-2" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15,50 C15,75 35,85 50,85 C65,85 85,75 85,50 L15,50 Z" fill="#7c1111" />
+                            <path d="M25,50 Q30,42 35,50 Q40,58 45,50" stroke="#f59e0b" stroke-width="4" />
+                            <circle cx="42" cy="66" r="11" fill="#fff" />
+                        </svg>
+                        <span class="text-white font-bold text-[10px] tracking-wide">HAKUTEN RAMEN</span>
+                    </div>
+                    
+                    <!-- 클릭 유도 가이드 오버레이 -->
+                    <div id="btn-overlay" class="absolute inset-0 bg-black/40 hover:bg-black/20 flex flex-col items-center justify-center text-white transition-all duration-500">
+                        <span class="text-[9px] tracking-widest font-bold uppercase border-b border-white/50 pb-0.5 mb-1">HAKUTEN</span>
+                        <span class="text-[11px] md:text-sm font-bold">터치</span>
+                    </div>
+                </div>
+            </button>
+        </div>
+
+        <!-- 매장 정보 대시보드 (오른쪽 카드보드 - 비율에 맞게 max-w-2xl 대형화 완료) -->
+        <section id="info-board" class="absolute opacity-0 pointer-events-none transition-layout z-30 w-full max-w-xl md:max-w-2xl px-6 md:px-0" style="right: 50%; top: 50%; transform: translate(50%, 40%);">
+            <div class="bg-boardGray rounded-3xl p-8 md:p-10 shadow-2xl border border-black/5">
+                
+                <!-- 매장 대표 전경 영역 (더 커진 보드 규격에 맞춰 높이를 h-56으로 확장) -->
+                <div class="relative w-full h-56 rounded-2xl overflow-hidden mb-8 shadow-inner bg-stone-900">
+                    <img id="store-img" src="hakuten.webp" class="w-full h-full object-cover" alt="하쿠텐 매장 전경" onerror="this.style.display='none'; document.getElementById('store-fallback').style.display='flex';">
+                    
+                    <!-- 이미지 로딩 실패 폴백 -->
+                    <div id="store-fallback" class="absolute inset-0 bg-stone-900 flex-col items-center justify-center text-center p-4 hidden">
+                        <svg class="w-14 h-14 text-stone-400 mb-2" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3">
+                            <path d="M10,42 L50,18 L90,42 Z" fill="#7c1111" />
+                            <rect x="18" y="42" width="64" height="42" fill="#292524" />
+                        </svg>
+                        <span class="text-white font-bold text-xs">하쿠텐 매장 전경</span>
+                    </div>
+                    
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                        <span class="text-white text-xs font-bold bg-brandRed px-3 py-1 rounded-md uppercase tracking-wider">Store Entrance</span>
+                    </div>
+                </div>
+
+                <!-- 세부 서술 안내 (폰트 크기 업스케일 적용) -->
+                <div class="flex items-center justify-between mb-6 border-b border-stone-200 pb-5">
+                    <div>
+                        <h2 class="text-3xl md:text-4xl font-black text-brandDarkRed">하쿠텐 (HAKUTEN)</h2>
+                        <p class="text-sm text-stone-500 mt-1.5">서울 마포구 동교로 266-12 지하 1층</p>
+                    </div>
+                    <span class="text-xs md:text-sm font-semibold px-3 py-1.5 bg-stone-200 text-stone-700 rounded-full">이에케 라멘 전문점</span>
+                </div>
+
+                <!-- 영업 세부 정보 -->
+                <div class="grid grid-cols-2 gap-6 text-xs md:text-sm text-stone-700 mb-8">
+                    <div>
+                        <p class="font-bold text-stone-500 mb-1.5">⏱️ 영업 시간</p>
+                        <p class="font-bold text-stone-900 text-sm md:text-base">11:30 - 21:00</p>
+                        <p class="text-stone-400 mt-0.5">브레이크타임 15:00 - 17:00</p>
+                        <p class="text-stone-400 font-semibold mt-1 text-[11px] md:text-xs">※ 매주 수요일 정기휴무</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-stone-500 mb-1.5">🍜 주문 옵션</p>
+                        <p class="font-bold text-stone-900 text-sm md:text-base">면 굵기, 간 조절, 기름 양 선택</p>
+                        <p class="text-stone-400 mt-0.5">면(꼬들함), 간(보통/짜게), 기름(보통/많이)</p>
+                    </div>
+                </div>
+
+                <!-- 대표 메뉴 안내 -->
+                <div class="border-t border-stone-200 pt-6">
+                    <h3 class="text-base md:text-lg font-bold text-stone-800 mb-4">대표 메뉴 및 가격</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center text-sm md:text-base">
+                            <span class="font-bold text-stone-800">이에케 라멘 (기본)</span>
+                            <span class="font-bold text-brandRed">11,000원</span>
+                        </div>
+                        <p class="text-xs md:text-sm text-stone-500 pl-3 border-l-2 border-stone-300">진하게 우려낸 돼지·닭 육수와 특제 쇼유 타레가 섞인 묵직한 오리지널 라멘</p>
+                        
+                        <div class="flex justify-between items-center text-sm md:text-base pt-2">
+                            <span class="font-bold text-stone-800">매운 이에케 라멘</span>
+                            <span class="font-bold text-brandRed">11,500원</span>
+                        </div>
+                        <p class="text-xs md:text-sm text-stone-500 pl-3 border-l-2 border-stone-300">하쿠텐 특유의 깊은 돈코츠 육수에 깔끔한 매콤함이 입혀진 중독성 있는 메뉴</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 하단 정보바 및 스크롤 안내 -->
+        <footer id="bottom-bar" class="w-full pb-8 text-center opacity-0 pointer-events-none transition-layout z-30">
+            <div class="inline-flex flex-col items-center gap-1.5 text-white/80 animate-bounce">
+                <span class="text-xs tracking-widest font-semibold uppercase">아래로 스크롤하여 생생한 리뷰를 확인하세요</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- 리뷰 섹션 그리드 영역 -->
+    <section id="reviews-section" class="min-h-screen bg-stone-900 py-20 px-4 md:px-8 lg:px-16 opacity-0 transition-opacity duration-1000 relative z-0">
+        <div class="max-w-7xl mx-auto">
+            
+            <div class="text-center mb-16">
+                <p class="text-brandRed font-black text-xs uppercase tracking-widest mb-2">HAKUTEN REVIEW ARCHIVE</p>
+                <h2 class="text-3xl md:text-5xl font-black text-white tracking-tight">수많은 단골들이 증명하는 하쿠텐의 가치</h2>
+                <div class="w-16 h-1 bg-brandRed mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <!-- 3열 다채로운 색감의 보드 그리드 (최대 5행) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- 1행 1열: 주최자 대표 총평 보드 (독립적인 브라운 우드 톤의 입체감) -->
+                <article class="bg-boardBrown rounded-2xl p-6 md:p-8 shadow-lg border-2 border-[#c5a880] relative flex flex-col justify-between">
+                    <div class="absolute -top-4 -left-3 bg-brandRed text-white text-xs font-black tracking-widest px-3 py-1.5 rounded-lg uppercase shadow-md">
+                        My Best Choice
+                    </div>
+                    <div class="mt-2">
+                        <div class="flex items-center gap-1 mb-4 text-amber-600">
+                            <span class="text-lg">★★★★★</span>
+                        </div>
+                        <h4 class="text-lg font-black text-brandDarkRed mb-3">"서울 이에케의 확고한 기준점"</h4>
+                        <p class="text-stone-700 text-sm leading-relaxed mb-6 font-medium">
+                            묵직한 돼지육수를 기반으로 한 짭짤한 국물, 그리고 위에 올라오는 향미유가 직관적으로 혀를 때리는 맛입니다. 면은 굵고 꼬들해서 국물과 기름을 한번에 끌어다주고, 시금치는 정말 좋은 휴식처가 되어줍니다. 면을 다 먹었다면, 뒤에 있는 셀프바에서 밥에 마요네즈와 마늘절임을 뿌려 가져와, 라멘의 국물을 취향에 맞게 뿌려 비벼 먹는 것을 추천합니다. 아 쓰다보니 먹고싶네 내일 가겠습니다.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 border-t border-stone-300 pt-4 mt-auto">
+                        <div class="w-10 h-10 rounded-full bg-brandDarkRed text-white flex items-center justify-center font-bold text-sm">현모</div>
+                        <div>
+                            <p class="text-xs font-bold text-stone-900">박현모의 총평</p>
+                            <p class="text-[11px] text-stone-500">라멘 매니아 · 2026년 작성</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 1행 2열: 일반 긍정 보드 (크림/베이지 톤) -->
+                <article class="bg-boardBeige rounded-2xl p-6 md:p-8 shadow-lg border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 mb-4 text-amber-500 text-sm">★★★★★</div>
+                        <h4 class="text-base font-bold text-stone-900 mb-2">"기다린 시간이 아깝지 않은 농축된 진함"</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed mb-6">
+                            웨이팅 테이블링 기계가 열리는 순간부터 대기가 어마어마하지만 한 입 떠먹으면 모든 피로가 풀립니다. 시금치가 진한 스프를 가득 머금어 함께 씹힐 때의 풍미가 예술입니다. 차슈도 너무 부드럽습니다.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 border-t border-stone-150 pt-4 mt-auto">
+                        <div class="w-8 h-8 rounded-full bg-zinc-200 text-stone-700 flex items-center justify-center font-bold text-xs">J</div>
+                        <div>
+                            <p class="text-[11px] font-bold text-stone-800">Jeon_Ramen</p>
+                            <p class="text-[10px] text-stone-400">네이버 방문객</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 1행 3열: 일반 긍정 보드 (밝은 그레이 톤) -->
+                <article class="bg-boardGray rounded-2xl p-6 md:p-8 shadow-lg border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 mb-4 text-amber-500 text-sm">★★★★★</div>
+                        <h4 class="text-base font-bold text-stone-900 mb-2">"염도가 완벽한 요코하마식 정통파"</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed mb-6">
+                            국내 다른 이에케 라멘들은 가끔 지나치게 한국화되어 연한 경우가 있는데, 하쿠텐은 정통 요코하마식의 높은 밀도와 타레의 짭조름함을 고수해서 좋습니다. 김을 국물에 충분히 적셔 밥과 싸 먹는 조합은 우주 제일입니다.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 border-t border-stone-200 pt-4 mt-auto">
+                        <div class="w-8 h-8 rounded-full bg-zinc-300 text-stone-700 flex items-center justify-center font-bold text-xs">김</div>
+                        <div>
+                            <p class="text-[11px] font-bold text-stone-800">김재현 (라멘투어러)</p>
+                            <p class="text-[10px] text-stone-400">구글 지도 리뷰어</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2행 1열: 일반 긍정 보드 (밝은 그레이 톤) -->
+                <article class="bg-boardGray rounded-2xl p-6 md:p-8 shadow-lg border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 mb-4 text-amber-500 text-sm">★★★★☆</div>
+                        <h4 class="text-base font-bold text-stone-900 mb-2">"시금치 추가는 무조건 선택이 아닌 필수입니다"</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed mb-6">
+                            기본 이에케 라멘에 시금치 무조건 추가하세요. 진한 수프와 시금치의 채즙이 융합되면서 최상의 밸런스를 만듭니다. 국물이 무겁다 싶을 때 다진 생강을 살짝 넣으면 리프레시되어 끝까지 맛있게 먹을 수 있습니다.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 border-t border-stone-200 pt-4 mt-auto">
+                        <div class="w-8 h-8 rounded-full bg-zinc-300 text-stone-700 flex items-center justify-center font-bold text-xs">S</div>
+                        <div>
+                            <p class="text-[11px] font-bold text-stone-800">SpinachLover</p>
+                            <p class="text-[10px] text-stone-400">망고플레이트</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2행 2열: 일반 긍정 보드 (크림/베이지 톤) -->
+                <article class="bg-boardBeige rounded-2xl p-6 md:p-8 shadow-lg border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 mb-4 text-amber-500 text-sm">★★★★★</div>
+                        <h4 class="text-base font-bold text-stone-900 mb-2">"두반장과 식초의 기적적인 피니시"</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed mb-6">
+                            절반쯤 먹었을 때 두반장과 다진 마늘을 넣고, 마지막 세 숟가락 정도 남았을 때 식초를 살짝 치면 국물의 무게감이 순식간에 화사해집니다. 이 맛을 한번 깨달으면 헤어나올 수 없어요. 주말마다 연남동으로 발길이 향합니다.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 border-t border-stone-150 pt-4 mt-auto">
+                        <div class="w-8 h-8 rounded-full bg-zinc-200 text-stone-700 flex items-center justify-center font-bold text-xs">민</div>
+                        <div>
+                            <p class="text-[11px] font-bold text-stone-800">민우_라멘일기</p>
+                            <p class="text-[10px] text-stone-400">인스타그램 크리에이터</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2행 3열: 일반 긍정 보드 (밝은 그레이 톤) -->
+                <article class="bg-boardGray rounded-2xl p-6 md:p-8 shadow-lg border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 mb-4 text-amber-500 text-sm">★★★★★</div>
+                        <h4 class="text-base font-bold text-stone-900 mb-2">"훈연 차슈가 자아내는 품격"</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed mb-6">
+                            다른 집과 비교 불가인 점 중 하나는 완벽하게 조리된 차슈입니다. 은은하게 배어있는 훈연 향이 입맛을 자극하고 질기지 않으며 부드럽게 찢어집니다. 아지타마고의 익힘 정도도 극상입니다.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 border-t border-stone-200 pt-4 mt-auto">
+                        <div class="w-8 h-8 rounded-full bg-zinc-300 text-stone-700 flex items-center justify-center font-bold text-xs">H</div>
+                        <div>
+                            <p class="text-[11px] font-bold text-stone-800">Hoon_Y</p>
+                            <p class="text-[10px] text-stone-400">구글 지도 리뷰어</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 3행 1열: 일반 긍정 보드 (크림/베이지 톤) -->
+                <article class="bg-boardBeige rounded-2xl p-6 md:p-8 shadow-lg border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 mb-4 text-amber-500 text-sm">★★★★★</div>
+                        <h4 class="text-base font-bold text-stone-900 mb-2">"면의 삶기와 흡착감이 남다릅니다"</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed mb-6">
+                            굵직하고 꼬들꼬들한 면발이 수프를 아주 기가 막히게 머금고 올라옵니다. 씹는 맛이 있는 두께감이라 농도 깊은 국물에 전혀 묻히지 않고 끝까지 멋진 주연 역할을 해냅니다. 면 곱빼기를 안 한 것이 매번 후회되네요.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 border-t border-stone-150 pt-4 mt-auto">
+                        <div class="w-8 h-8 rounded-full bg-zinc-200 text-stone-700 flex items-center justify-center font-bold text-xs">리</div>
+                        <div>
+                            <p class="text-[11px] font-bold text-stone-800">리뷰마스터</p>
+                            <p class="text-[10px] text-stone-400">네이버 블로거</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 3행 2열: 일반 긍정 보드 (밝은 그레이 톤) -->
+                <article class="bg-boardGray rounded-2xl p-6 md:p-8 shadow-lg border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 mb-4 text-amber-500 text-sm">★★★★★</div>
+                        <h4 class="text-base font-bold text-stone-900 mb-2">"매운 이에케도 독창적입니다"</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed mb-6">
+                            기본도 훌륭하지만 해장하고 싶을 때는 매운 버전이 생각납니다. 그냥 캡사이신 같은 인위적인 매운맛이 아니라 육수의 고소하고 깊은 베이스와 잘 엉겨붙는 묵직하고 복합적인 매콤함입니다. 강추합니다.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 border-t border-stone-200 pt-4 mt-auto">
+                        <div class="w-8 h-8 rounded-full bg-zinc-300 text-stone-700 flex items-center justify-center font-bold text-xs">최</div>
+                        <div>
+                            <p class="text-[11px] font-bold text-stone-800">최성훈</p>
+                            <p class="text-[10px] text-stone-400">카카오맵 평가단</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 3행 3열: 일반 긍정 보드 (크림/베이지 톤) -->
+                <article class="bg-boardBeige rounded-2xl p-6 md:p-8 shadow-lg border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 mb-4 text-amber-500 text-sm">★★★★★</div>
+                        <h4 class="text-base font-bold text-stone-900 mb-2">"연남동에 갈 유일한 가치"</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed mb-6">
+                            지하철에서 조금 걸어 들어가야 하는 연남동 안쪽 골목임에도 언제나 사람들로 붐비는 이유를 단 한 입으로 즉각 체감할 수 있습니다. 스태프분들의 절도 있는 서비스와 활기참도 한 그릇의 맛을 더해줍니다.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 border-t border-stone-150 pt-4 mt-auto">
+                        <div class="w-8 h-8 rounded-full bg-zinc-200 text-stone-700 flex items-center justify-center font-bold text-xs">R</div>
+                        <div>
+                            <p class="text-[11px] font-bold text-stone-800">RamenWand</p>
+                            <p class="text-[10px] text-stone-400">구글 지도 리뷰어</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 4행 1열: 일반 긍정 보드 (밝은 그레이 톤) -->
+                <article class="bg-boardGray rounded-2xl p-6 md:p-8 shadow-lg border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 mb-4 text-amber-500 text-sm">★★★★★</div>
+                        <h4 class="text-base font-bold text-stone-900 mb-2">"스프의 농축감이 차원이 다르다"</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed mb-6">
+                            콜라겐 성분이 그대로 느껴지는 입술에 쩍쩍 달라붙는 듯한 찐득하고 깊이 있는 스프입니다. 잡내가 없고 닭과 돼지의 밸런스를 환상적으로 맞춰두어서 정기적으로 수혈해 줘야 하는 마약 같은 라멘입니다.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 border-t border-stone-200 pt-4 mt-auto">
+                        <div class="w-8 h-8 rounded-full bg-zinc-300 text-stone-700 flex items-center justify-center font-bold text-xs">박</div>
+                        <div>
+                            <p class="text-[11px] font-bold text-stone-800">박주환</p>
+                            <p class="text-[10px] text-stone-400">네이버 방문객</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 4행 2열: 일반 긍정 보드 (크림/베이지 톤) -->
+                <article class="bg-boardBeige rounded-2xl p-6 md:p-8 shadow-lg border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 mb-4 text-amber-500 text-sm">★★★★☆</div>
+                        <h4 class="text-base font-bold text-stone-900 mb-2">"무조건 밥을 말아먹어야 끝이 납니다"</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed mb-6">
+                            면을 다 먹고 아지타마고를 살짝 남긴 뒤 밥을 청해 함께 국물에 으깨 드셔보세요. 면을 먹을 때와는 또 다른 차원의 고소함이 밥알 사이사이에 배어들어 환상적인 2막을 선사합니다.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 border-t border-stone-150 pt-4 mt-auto">
+                        <div class="w-8 h-8 rounded-full bg-zinc-200 text-stone-700 flex items-center justify-center font-bold text-xs">B</div>
+                        <div>
+                            <p class="text-[11px] font-bold text-stone-800">BowlEater</p>
+                            <p class="text-[10px] text-stone-400">망고플레이트</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 4행 3열: 일반 긍정 보드 (밝은 그레이 톤) -->
+                <article class="bg-boardGray rounded-2xl p-6 md:p-8 shadow-lg border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 mb-4 text-amber-500 text-sm">★★★★★</div>
+                        <h4 class="text-base font-bold text-stone-900 mb-2">"마포구 최고의 솔 푸드"</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed mb-6">
+                            지치고 지친 날 저녁, 하쿠텐 카운터에 앉아 무거운 라멘 한 그릇과 함께 차가운 하이볼을 곁들이면 스트레스가 눈 녹듯 사라집니다. 이에케 정통의 맛을 이토록 정직하게 유지해 주는 곳에 감사를 표합니다.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 border-t border-stone-200 pt-4 mt-auto">
+                        <div class="w-8 h-8 rounded-full bg-zinc-300 text-stone-700 flex items-center justify-center font-bold text-xs">강</div>
+                        <div>
+                            <p class="text-[11px] font-bold text-stone-800">강예린</p>
+                            <p class="text-[10px] text-stone-400">카카오맵 평가단</p>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 인터랙션 핸들링 자바스크립트 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ramenBtn = document.getElementById('ramen-btn');
+            const btnOverlay = document.getElementById('btn-overlay');
+            const landingContainer = document.getElementById('landing-container');
+            const headerBar = document.getElementById('header-bar');
+            const infoBoard = document.getElementById('info-board');
+            const bottomBar = document.getElementById('bottom-bar');
+            const reviewsSection = document.getElementById('reviews-section');
+            const mainBody = document.getElementById('main-body');
+
+            // 버튼 클릭 레이아웃 전개
+            ramenBtn.addEventListener('click', () => {
+                btnOverlay.style.opacity = '0';
+                setTimeout(() => btnOverlay.remove(), 500);
+
+                mainBody.classList.remove('no-scroll');
+                reviewsSection.classList.remove('opacity-0');
+                reviewsSection.classList.add('opacity-100');
+
+                landingContainer.style.backgroundColor = '#5c0f0f';
+
+                const isMobile = window.innerWidth < 768;
+
+                if (isMobile) {
+                    // 모바일 최적화 배치 크기
+                    ramenBtn.style.width = '200px';
+                    ramenBtn.style.height = '200px';
+                    ramenBtn.style.left = '50%';
+                    ramenBtn.style.top = '24%';
+                    ramenBtn.style.transform = 'translate(-50%, -50%) scale(1)';
+
+                    infoBoard.style.left = '50%';
+                    infoBoard.style.top = '62%';
+                    infoBoard.style.transform = 'translate(-50%, -50%) scale(0.95)';
+                } else {
+                    // 데스크톱: 기존 1.5배 메가 스케일 업(630px) 및 중앙 밀집 수평 위치(35% & 65%)
+                    ramenBtn.style.width = '630px';
+                    ramenBtn.style.height = '630px';
+                    ramenBtn.style.left = '35%';
+                    ramenBtn.style.top = '53%';
+                    ramenBtn.style.transform = 'translate(-50%, -50%) scale(1)';
+
+                    infoBoard.style.left = '65%';
+                    infoBoard.style.top = '53%';
+                    infoBoard.style.transform = 'translate(-50%, -50%) scale(1)';
+                }
+
+                headerBar.classList.remove('opacity-0', '-translate-y-10');
+                headerBar.classList.add('opacity-100', 'translate-y-0');
+
+                infoBoard.classList.remove('opacity-0', 'pointer-events-none');
+                infoBoard.classList.add('opacity-100');
+
+                bottomBar.classList.remove('opacity-0', 'pointer-events-none');
+                bottomBar.classList.add('opacity-100');
+
+                ramenBtn.blur();
+            });
+
+            // 화면 전환(반응형 리사이즈) 대응
+            window.addEventListener('resize', () => {
+                if (mainBody.classList.contains('no-scroll')) return;
+
+                const isMobile = window.innerWidth < 768;
+                if (isMobile) {
+                    ramenBtn.style.width = '200px';
+                    ramenBtn.style.height = '200px';
+                    ramenBtn.style.left = '50%';
+                    ramenBtn.style.top = '24%';
+                    ramenBtn.style.transform = 'translate(-50%, -50%) scale(1)';
+
+                    infoBoard.style.left = '50%';
+                    infoBoard.style.top = '62%';
+                    infoBoard.style.transform = 'translate(-50%, -50%) scale(0.95)';
+                } else {
+                    ramenBtn.style.width = '630px';
+                    ramenBtn.style.height = '630px';
+                    ramenBtn.style.left = '35%';
+                    ramenBtn.style.top = '53%';
+                    ramenBtn.style.transform = 'translate(-50%, -50%) scale(1)';
+
+                    infoBoard.style.left = '65%';
+                    infoBoard.style.top = '53%';
+                    infoBoard.style.transform = 'translate(-50%, -50%) scale(1)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
