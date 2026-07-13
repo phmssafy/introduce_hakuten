@@ -25,7 +25,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght=300;400;500;700;900&family=Playfair+Display:ital,wght=0,600;1,600&display=swap" rel="stylesheet">
     
     <style>
         body {
@@ -140,7 +140,7 @@
     </div>
 
     <!-- 메인 랜딩 영역 (Z-INDEX 20+로 실질적 콘텐츠 올림) -->
-    <main id="landing-container" class="relative w-full h-screen bg-transparent flex flex-col justify-between overflow-hidden z-20">
+    <main id="landing-container" class="relative w-full h-screen bg-transparent flex flex-col justify-between overflow-hidden z-20 transition-all duration-1000">
         
         <!-- 헤더 영역 -->
         <header id="header-bar" class="w-full pt-8 px-6 text-center opacity-0 -translate-y-10 transition-layout pointer-events-none z-30">
@@ -254,7 +254,7 @@
 
     </main>
 
-    <!-- 리뷰 섹션 그리드 영역 (컨테이너 자체는 z-index 없이 흘러가며, 내부에 검정 배경을 z-0으로 깔아 면발 z-15가 그 위에 뜨고 카드는 z-20이 덮음) -->
+    <!-- 리뷰 섹션 그리드 영역 -->
     <section id="reviews-section" class="min-h-screen py-20 px-4 md:px-8 lg:px-16 opacity-0 transition-opacity duration-1000 relative">
         
         <!-- 검은색 배경 레이어 (Z-INDEX 0 - 최하단) -->
@@ -283,7 +283,7 @@
                         </div>
                         <h4 class="text-lg font-black text-brandDarkRed mb-3">"서울 이에케의 확고한 기준점"</h4>
                         <p class="text-stone-700 text-sm leading-relaxed mb-6 font-medium">
-                            묵직한 돼지육수를 기반으로 한 짭짤한 국물, 그리고 위에 올라오는 향미유가 직관적으로 혀를 때리는 맛입니다. 면은 굵고 꼬들해서 국물과 기름을 한번에 끌어다주고, 시금치는 정말 좋은 휴식처가 되어줍니다. 면을 다 먹었다면, 뒤에 있는 셀프바에서 밥에 마요네즈와 마늘절임을 뿌려 가져와, 라멘의 국물을 취향에 맞게 뿌려 비벼 먹는 것을 추천합니다. 아 쓰다보니 먹고싶네 내일 가겠습니다.
+                            묵직한 돼지육수를 기반으로 한 짭짤한 국물, 그리고 위에 올라오는 향미유가 직관적으로 혀를 때리는 맛입니다. 면은 굵고 꼬들해서 국물과 기름을 한번에 끌어다주고, 시금치는 정말 좋은 휴식처가 되어줍니다. 면을 다 먹었다면, 뒤에 있는 셀프바에서 밥에 마요네즈와 마늘절임을 뿌려 가져와, 라멘의 국물을 취향에 맞게 뿌려 비벼 먹 것을 추천합니다. 아 쓰다보니 먹고싶네 내일 가겠습니다.
                         </p>
                     </div>
                     <div class="flex items-center gap-3 border-t border-stone-300 pt-4 mt-auto">
@@ -516,7 +516,6 @@
 
     <!-- 맛집 등록 모달 팝업 창 (Z-INDEX 50) -->
     <div id="modal-overlay" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-500">
-        <!-- ... existing content of modal-overlay (맛집 등록 완료 폼) ... -->
         <div class="bg-boardGray rounded-3xl w-full max-w-lg p-6 md:p-8 shadow-2xl border border-white/10 scale-95 transition-transform duration-500" id="modal-container">
             
             <!-- 모달 헤더 -->
@@ -563,7 +562,7 @@
                     <textarea id="input-content" required rows="4" placeholder="맛있게 드셨던 생생한 비법이나 감상평을 한글로 꼼꼼하게 채워보세요!" class="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brandRed focus:border-transparent transition-all resize-none"></textarea>
                 </div>
 
-                <!-- 경고창 대용 인라인 피드백 메시지 영역 (alert/confirm 대체) -->
+                <!-- 경고창 대용 인라인 피드백 메시지 영역 -->
                 <p id="error-msg" class="text-xs text-brandRed font-bold hidden"></p>
 
                 <div class="pt-4 flex gap-3">
@@ -625,11 +624,47 @@
             const leftNoodles = document.getElementById('noodles-left');
             const rightNoodles = document.getElementById('noodles-right');
 
-            // [핵심 변경] 페이지 로드 즉시 면발 활성화 (처음부터 반투명, 천천히 흐르게 지정)
+            // 페이지 로드 즉시 면발 활성화 (처음부터 반투명, 천천히 흐르게 지정)
             setTimeout(() => {
                 leftNoodles.classList.add('noodle-active', 'noodle-slow');
                 rightNoodles.classList.add('noodle-active', 'noodle-slow');
             }, 100);
+
+            // 레이아웃 스케일 및 배치를 설정하는 핵심 조율 엔진 함수
+            function adjustActiveLayout() {
+                const isMobile = window.innerWidth < 768;
+
+                if (isMobile) {
+                    // [모바일 대응] 컨테이너 높이를 넉넉히 연장해 겹침 원천 방지
+                    landingContainer.style.height = '1150px';
+
+                    // 라멘 사진을 상단 중앙에 고정 (px 기반으로 정밀 배치)
+                    ramenBtn.style.width = '200px';
+                    ramenBtn.style.height = '200px';
+                    ramenBtn.style.left = '50%';
+                    ramenBtn.style.top = '220px';
+                    ramenBtn.style.transform = 'translate(-50%, -50%) scale(1)';
+
+                    // 가게 정보 UI 보드를 라멘 사진 한참 아래 배치해 절대 겹치지 않게 조치
+                    infoBoard.style.left = '50%';
+                    infoBoard.style.top = '700px';
+                    infoBoard.style.transform = 'translate(-50%, -50%) scale(0.95)';
+                } else {
+                    // [데스크톱 대응] 기본 풀스크린 높이 복구
+                    landingContainer.style.height = '100vh';
+
+                    // 데스크톱: 중앙 집중 수평 위치 (35% & 65%)
+                    ramenBtn.style.width = '630px';
+                    ramenBtn.style.height = '630px';
+                    ramenBtn.style.left = '35%';
+                    ramenBtn.style.top = '53%';
+                    ramenBtn.style.transform = 'translate(-50%, -50%) scale(1)';
+
+                    infoBoard.style.left = '65%';
+                    infoBoard.style.top = '53%';
+                    infoBoard.style.transform = 'translate(-50%, -50%) scale(1)';
+                }
+            }
 
             // 버튼 클릭 레이아웃 전개
             ramenBtn.addEventListener('click', () => {
@@ -646,31 +681,8 @@
                 // 배경색 변화를 메인 컨테이너가 아닌 body에 직접 적용하여 z-index 뒤쪽에서 부드럽게 전환되게 함
                 mainBody.style.backgroundColor = '#5c0f0f';
 
-                const isMobile = window.innerWidth < 768;
-
-                if (isMobile) {
-                    // 모바일 최적화 배치 크기
-                    ramenBtn.style.width = '200px';
-                    ramenBtn.style.height = '200px';
-                    ramenBtn.style.left = '50%';
-                    ramenBtn.style.top = '24%';
-                    ramenBtn.style.transform = 'translate(-50%, -50%) scale(1)';
-
-                    infoBoard.style.left = '50%';
-                    infoBoard.style.top = '62%';
-                    infoBoard.style.transform = 'translate(-50%, -50%) scale(0.95)';
-                } else {
-                    // 데스크톱: 기존 1.5배 메가 스케일 업(630px) 및 중앙 밀집 수평 위치(35% & 65%)
-                    ramenBtn.style.width = '630px';
-                    ramenBtn.style.height = '630px';
-                    ramenBtn.style.left = '35%';
-                    ramenBtn.style.top = '53%';
-                    ramenBtn.style.transform = 'translate(-50%, -50%) scale(1)';
-
-                    infoBoard.style.left = '65%';
-                    infoBoard.style.top = '53%';
-                    infoBoard.style.transform = 'translate(-50%, -50%) scale(1)';
-                }
+                // 디바이스별 정교한 크기 및 높이 연산 엔진 기동
+                adjustActiveLayout();
 
                 headerBar.classList.remove('opacity-0', '-translate-y-10');
                 headerBar.classList.add('opacity-100', 'translate-y-0');
@@ -687,29 +699,7 @@
             // 화면 전환(반응형 리사이즈) 대응
             window.addEventListener('resize', () => {
                 if (mainBody.classList.contains('no-scroll')) return;
-
-                const isMobile = window.innerWidth < 768;
-                if (isMobile) {
-                    ramenBtn.style.width = '200px';
-                    ramenBtn.style.height = '200px';
-                    ramenBtn.style.left = '50%';
-                    ramenBtn.style.top = '24%';
-                    ramenBtn.style.transform = 'translate(-50%, -50%) scale(1)';
-
-                    infoBoard.style.left = '50%';
-                    infoBoard.style.top = '62%';
-                    infoBoard.style.transform = 'translate(-50%, -50%) scale(0.95)';
-                } else {
-                    ramenBtn.style.width = '630px';
-                    ramenBtn.style.height = '630px';
-                    ramenBtn.style.left = '35%';
-                    ramenBtn.style.top = '53%';
-                    ramenBtn.style.transform = 'translate(-50%, -50%) scale(1)';
-
-                    infoBoard.style.left = '65%';
-                    infoBoard.style.top = '53%';
-                    infoBoard.style.transform = 'translate(-50%, -50%) scale(1)';
-                }
+                adjustActiveLayout();
             });
 
             // ==========================================
@@ -820,7 +810,7 @@
                 }, 400);
             });
 
-            // 로컬 맛집 리뷰들 렌더링하기 (메인 하쿠텐 카드 영역이 아닌, 둘러보기 전용 팝업 내부 그리드로 출력)
+            // 로컬 맛집 리뷰들 렌더링하기 (둘러보기 전용 팝업 내부 그리드로 출력)
             function renderCustomReviews() {
                 // 이전에 렌더링되었던 커스텀 보드들만 제거
                 const existingCustoms = document.querySelectorAll('.custom-board-item');
@@ -900,7 +890,7 @@
                 if (e.target === browseModalOverlay) closeBrowseModal();
             });
 
-            // 삭제 인터랙션 바인딩 (이벤트 위임 활용) - 둘러보기 모달 내부 그리드로 연결처 전환
+            // 삭제 인터랙션 바인딩
             browseReviewsGrid.addEventListener('click', (e) => {
                 const target = e.target;
                 if (target.classList.contains('delete-review-btn')) {
