@@ -25,13 +25,16 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:ital,wght=0,600;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
             background-color: #a81c1c;
             overflow-x: hidden;
+            word-break: keep-all; /* 한글 단어 단위 개행 보장 */
+            overflow-wrap: break-word;
+            transition: background-color 1.2s cubic-bezier(0.25, 1, 0.5, 1);
         }
         
         /* 레이아웃 전환 애니메이션 */
@@ -39,14 +42,20 @@
             transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
         }
         
-        /* 라멘 원형 이미지 요동 효과 */
-        @keyframes pulse-gentle {
-            0%, 100% { transform: scale(1) translate(-50%, -50%); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
-            50% { transform: scale(1.05) translate(-48%, -52%); box-shadow: 0 0 25px 12px rgba(255, 255, 255, 0.2); }
+        /* 두근거리는 심박(심장박동) 애니메이션 */
+        @keyframes pulse-heart {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1); 
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.08); 
+                box-shadow: 0 20px 35px -5px rgba(255, 255, 255, 0.25), 0 0 20px 8px rgba(255, 255, 255, 0.15);
+            }
         }
         
-        .pulse-hover:hover {
-            animation: pulse-gentle 2s infinite ease-in-out;
+        .animate-pulse-heart {
+            animation: pulse-heart 1.5s infinite ease-in-out;
         }
 
         /* 활성화 이전 스크롤 비활성화 */
@@ -54,12 +63,84 @@
             overflow: hidden;
             height: 100vh;
         }
+
+        /* 화면 좌우 영역 면 컨테이너 (UI의 중간 레이어) */
+        .noodle-container {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 80px;
+            pointer-events: none;
+            z-index: 15; /* 배경(z-0)보다는 앞에, 모든 실제 UI(z-20/30)보다는 뒤에 배치 */
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* 구불구불한 한 가닥의 벡터 기반 인라인 SVG 패턴 라인 */
+        .noodle-strand {
+            width: 14px;
+            height: 100%;
+            /* 꼬불꼬불한 라멘 면발을 나타내는 세로 반복형 벡터 그래픽 */
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='40' viewBox='0 0 14 40'><path d='M7,0 Q14,10 7,20 T7,40' fill='none' stroke='%23f59e0b' stroke-width='4' stroke-linecap='round'/></svg>");
+            background-repeat: repeat-y;
+            background-size: 100% 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            transition: opacity 1.2s ease, transform 1.2s ease;
+        }
+
+        /* 면발 가닥별 개별 색감 편차 및 지연 효과 부여 */
+        .noodle-strand:nth-child(2) { 
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='40' viewBox='0 0 14 40'><path d='M7,0 Q14,10 7,20 T7,40' fill='none' stroke='%23fbbf24' stroke-width='3' stroke-linecap='round'/></svg>");
+            margin-top: 15px; 
+        }
+        .noodle-strand:nth-child(3) { margin-top: 5px; }
+        .noodle-strand:nth-child(4) { 
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='40' viewBox='0 0 14 40'><path d='M7,0 Q14,10 7,20 T7,40' fill='none' stroke='%23fbbf24' stroke-width='3.5' stroke-linecap='round'/></svg>");
+            margin-top: 25px; 
+        }
+        .noodle-strand:nth-child(5) { margin-top: 10px; }
+
+        @keyframes flow-down {
+            0% { background-position-y: 0; }
+            100% { background-position-y: 800px; }
+        }
+
+        /* 면 활성화 시 부드러운 등장 */
+        .noodle-active .noodle-strand {
+            opacity: 0.85;
+            transform: translateY(0);
+        }
+
+        /* 처음부터 끝까지 평화롭고 고요한 무한 크롤링 (요청사항 반영) */
+        .noodle-slow .noodle-strand {
+            animation: flow-down 24s infinite linear;
+            opacity: 0.45; /* 가독성에 방해되지 않는 은은한 투명도 */
+        }
     </style>
 </head>
 <body class="no-scroll text-textDark antialiased selection:bg-brandRed selection:text-white" id="main-body">
 
-    <!-- 메인 랜딩 영역 -->
-    <main id="landing-container" class="relative w-full h-screen bg-brandRed transition-colors duration-1000 flex flex-col justify-between overflow-hidden z-10">
+    <!-- 좌측 구불구불 5가닥 면발 (Z-INDEX 15) -->
+    <div id="noodles-left" class="noodle-container left-3 md:left-8">
+        <div class="noodle-strand"></div>
+        <div class="noodle-strand"></div>
+        <div class="noodle-strand"></div>
+        <div class="noodle-strand"></div>
+        <div class="noodle-strand"></div>
+    </div>
+
+    <!-- 우측 구불구불 5가닥 면발 (Z-INDEX 15) -->
+    <div id="noodles-right" class="noodle-container right-3 md:right-8">
+        <div class="noodle-strand"></div>
+        <div class="noodle-strand"></div>
+        <div class="noodle-strand"></div>
+        <div class="noodle-strand"></div>
+        <div class="noodle-strand"></div>
+    </div>
+
+    <!-- 메인 랜딩 영역 (Z-INDEX 20+로 실질적 콘텐츠 올림) -->
+    <main id="landing-container" class="relative w-full h-screen bg-transparent flex flex-col justify-between overflow-hidden z-20">
         
         <!-- 헤더 영역 -->
         <header id="header-bar" class="w-full pt-8 px-6 text-center opacity-0 -translate-y-10 transition-layout pointer-events-none z-30">
@@ -69,9 +150,9 @@
             </h1>
         </header>
 
-        <!-- 중앙 메인 원형 이미지 버튼 (기존 크기보다 2배 작아진 초기 사이즈 적용) -->
+        <!-- 중앙 메인 원형 이미지 버튼 (클릭 및 두근거림 결합) -->
         <div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-            <button id="ramen-btn" class="absolute pointer-events-auto w-32 h-32 md:w-[210px] md:h-[210px] rounded-full overflow-hidden border-8 border-white shadow-2xl transition-layout cursor-pointer focus:outline-none focus:ring-4 focus:ring-white/50 active:scale-95" style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
+            <button id="ramen-btn" class="animate-pulse-heart absolute pointer-events-auto w-32 h-32 md:w-[210px] md:h-[210px] rounded-full overflow-hidden border-8 border-white shadow-2xl transition-layout cursor-pointer focus:outline-none focus:ring-4 focus:ring-white/50 active:scale-95" style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
                 <div class="relative w-full h-full bg-stone-900">
                     <!-- 실제 업로드 라멘 이미지 -->
                     <img id="ramen-img" src="ramen.jpg" class="w-full h-full object-cover select-none scale-105 hover:scale-110 transition-transform duration-700" alt="하쿠텐 이에케 라멘" onerror="this.style.display='none'; document.getElementById('ramen-fallback').style.display='flex';">
@@ -89,17 +170,17 @@
                     <!-- 클릭 유도 가이드 오버레이 -->
                     <div id="btn-overlay" class="absolute inset-0 bg-black/40 hover:bg-black/20 flex flex-col items-center justify-center text-white transition-all duration-500">
                         <span class="text-[9px] tracking-widest font-bold uppercase border-b border-white/50 pb-0.5 mb-1">HAKUTEN</span>
-                        <span class="text-[11px] md:text-sm font-bold">터치</span>
+                        <span class="text-[11px] md:text-sm font-bold">클릭</span>
                     </div>
                 </div>
             </button>
         </div>
 
-        <!-- 매장 정보 대시보드 (오른쪽 카드보드 - 비율에 맞게 max-w-2xl 대형화 완료) -->
+        <!-- 매장 정보 대시보드 (오른쪽 카드보드 - 비율에 맞춘 max-w-2xl 사이즈) -->
         <section id="info-board" class="absolute opacity-0 pointer-events-none transition-layout z-30 w-full max-w-xl md:max-w-2xl px-6 md:px-0" style="right: 50%; top: 50%; transform: translate(50%, 40%);">
             <div class="bg-boardGray rounded-3xl p-8 md:p-10 shadow-2xl border border-black/5">
                 
-                <!-- 매장 대표 전경 영역 (더 커진 보드 규격에 맞춰 높이를 h-56으로 확장) -->
+                <!-- 매장 대표 전경 영역 -->
                 <div class="relative w-full h-56 rounded-2xl overflow-hidden mb-8 shadow-inner bg-stone-900">
                     <img id="store-img" src="hakuten.webp" class="w-full h-full object-cover" alt="하쿠텐 매장 전경" onerror="this.style.display='none'; document.getElementById('store-fallback').style.display='flex';">
                     
@@ -117,7 +198,7 @@
                     </div>
                 </div>
 
-                <!-- 세부 서술 안내 (폰트 크기 업스케일 적용) -->
+                <!-- 세부 서술 안내 (어절 단위 줄바꿈 적용) -->
                 <div class="flex items-center justify-between mb-6 border-b border-stone-200 pb-5">
                     <div>
                         <h2 class="text-3xl md:text-4xl font-black text-brandDarkRed">하쿠텐 (HAKUTEN)</h2>
@@ -173,9 +254,14 @@
 
     </main>
 
-    <!-- 리뷰 섹션 그리드 영역 -->
-    <section id="reviews-section" class="min-h-screen bg-stone-900 py-20 px-4 md:px-8 lg:px-16 opacity-0 transition-opacity duration-1000 relative z-0">
-        <div class="max-w-7xl mx-auto">
+    <!-- 리뷰 섹션 그리드 영역 (컨테이너 자체는 z-index 없이 흘러가며, 내부에 검정 배경을 z-0으로 깔아 면발 z-15가 그 위에 뜨고 카드는 z-20이 덮음) -->
+    <section id="reviews-section" class="min-h-screen py-20 px-4 md:px-8 lg:px-16 opacity-0 transition-opacity duration-1000 relative">
+        
+        <!-- 검은색 배경 레이어 (Z-INDEX 0 - 최하단) -->
+        <div class="absolute inset-0 bg-stone-900 z-0"></div>
+
+        <!-- 실제 콘텐츠 레이어 (Z-INDEX 20 - 최상단) -->
+        <div class="relative z-20 max-w-7xl mx-auto">
             
             <div class="text-center mb-16">
                 <p class="text-brandRed font-black text-xs uppercase tracking-widest mb-2">HAKUTEN REVIEW ARCHIVE</p>
@@ -422,9 +508,22 @@
             const bottomBar = document.getElementById('bottom-bar');
             const reviewsSection = document.getElementById('reviews-section');
             const mainBody = document.getElementById('main-body');
+            
+            // 면 엘리먼트 타겟 정의
+            const leftNoodles = document.getElementById('noodles-left');
+            const rightNoodles = document.getElementById('noodles-right');
+
+            // [핵심 변경] 페이지 로드 즉시 면발 활성화 (처음부터 반투명, 천천히 흐르게 지정)
+            setTimeout(() => {
+                leftNoodles.classList.add('noodle-active', 'noodle-slow');
+                rightNoodles.classList.add('noodle-active', 'noodle-slow');
+            }, 100);
 
             // 버튼 클릭 레이아웃 전개
             ramenBtn.addEventListener('click', () => {
+                // 두근거리는 애니메이션 클래스를 즉시 제거하여 확장 모션과의 충돌 최소화
+                ramenBtn.classList.remove('animate-pulse-heart');
+
                 btnOverlay.style.opacity = '0';
                 setTimeout(() => btnOverlay.remove(), 500);
 
@@ -432,7 +531,8 @@
                 reviewsSection.classList.remove('opacity-0');
                 reviewsSection.classList.add('opacity-100');
 
-                landingContainer.style.backgroundColor = '#5c0f0f';
+                // 배경색 변화를 메인 컨테이너가 아닌 body에 직접 적용하여 z-index 뒤쪽에서 부드럽게 전환되게 함
+                mainBody.style.backgroundColor = '#5c0f0f';
 
                 const isMobile = window.innerWidth < 768;
 
